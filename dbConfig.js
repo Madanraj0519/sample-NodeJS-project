@@ -1,4 +1,5 @@
 const { default: mongoose } = require("mongoose");
+require('dotenv').config()
 
 async function connectDatabase(){
     try{
