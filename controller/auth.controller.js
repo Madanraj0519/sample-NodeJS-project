@@ -112,8 +112,17 @@ authRouter.post('/forgotPassword', cors(), async(req, res) => {
             // for sending the email to the user
             const url = `http://localhost:5173/updatePassword?uid=${response._id}&str=${response.string}`;
 
-            sendEmail(response.email, url);
+            const mail = await sendEmail(response.email, url);
+
+            if(!mail){
+                return res.status(400).json({
+                    success : false,
+                    message : "Your email is invalid to send the email",
+                },);
+            }
               
+            console.log(mail);
+            
             return res.status(200).json({
             success : true,
             message : "password recovery email sent successfully",
@@ -164,7 +173,6 @@ authRouter.put("/update/:uid", (req, res) => {
         });
       });
   });
-
 
 
 module.exports = authRouter;

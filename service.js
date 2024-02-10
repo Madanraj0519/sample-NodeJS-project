@@ -2,31 +2,41 @@ const nodemailer = require("nodemailer");
 const smtpTransport = require('nodemailer-smtp-transport');
 require('dotenv').config();
 
-function sendEmail(receiverEmail, url){
-    nodemailer.createTestAccount((err, account) => {
-        var transporter = nodemailer.createTransport(smtpTransport({
-           service:"Gmail",
-            auth: {
-                user: process.env.EMAIL_NAME,       // Sender mail id
-                pass: process.env.EMAIL_PASSWORD                 // Sender password
-            }
-            }));
-        let mailOptions = {
-            from: `Fred Foo 👻" <${process.env.EMAIL_NAME}>`,        // Sender mail id
-            to: 'madanswetha10@gmail.com',                // Reciever mail id (For multiple recievers to:'abc@gmail.com,xyz@gmail.com')
-            subject: 'Password recovery mail',
-            text: `To update the password! click on link ${url}` 
-        };
-  
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log('Error', error);
-            }
-            else{
-                console.log('Success', info);
+function sendEmail(receiverEmail, url) {
+    return new Promise((resolve, reject) => {
+        nodemailer.createTestAccount((err, account) => {
+            if (err) {
+                reject(err);
+            } else {
+                const transporter = nodemailer.createTransport(smtpTransport({
+                    service: "Gmail",
+                    auth: {
+                        user: process.env.EMAIL_USER,
+                        pass: process.env.EMAIL_PASS,
+                    }
+                }));
+
+                let mailOptions = {
+                    from: '"Fred Foo 👻" <madanraj0519@gmail.com>',
+                    to: receiverEmail,
+                    subject: 'Password recovery mail',
+                    text: `To update the password! click on link ${url}`
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('Error', error);
+                        reject(error);
+                    } else {
+                        console.log('Success', info);
+                        resolve(info);
+                    }
+                });
             }
         });
     });
-  }
+}
+
+console.log(sendEmail);
 
 module.exports = sendEmail;
